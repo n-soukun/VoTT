@@ -2,7 +2,7 @@
     "compilerOptions": {
         "target": "es6",
         "allowJs": false,
-        "skipLibCheck": false,
+        "skipLibCheck": true,
         "esModuleInterop": true,
         "allowSyntheticDefaultImports": true,
         "strict": false,
@@ -14,16 +14,8 @@
         "noEmit": true,
         "jsx": "preserve",
         "experimentalDecorators": true,
-        "lib": [
-            "es2015",
-            "dom"
-        ],
-        "typeRoots": [
-            "./typings",
-            "./node_modules/@types"
-        ],
+        "lib": ["es2015", "dom"],
+        "typeRoots": ["./typings", "./node_modules/@types"]
     },
-    "include": [
-        "src"
-    ]
+    "include": ["src"]
 }

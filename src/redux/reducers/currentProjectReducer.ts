@@ -16,7 +16,10 @@ const tagColors = require("../../react/components/common/tagColors.json");
  * @param state - Current project
  * @param action - Action that was dispatched
  */
-export const reducer = (state: IProject = null, action: AnyAction): IProject => {
+export const reducer = (
+    state: IProject = null,
+    action: AnyAction
+): IProject => {
     switch (action.type) {
         case ActionTypes.DELETE_PROJECT_SUCCESS:
         case ActionTypes.CLOSE_PROJECT_SUCCESS:
@@ -38,17 +41,24 @@ export const reducer = (state: IProject = null, action: AnyAction): IProject => 
             }
 
             const updatedAssets = { ...state.assets } || {};
-            updatedAssets[action.payload.asset.id] = { ...action.payload.asset };
+            updatedAssets[action.payload.asset.id] = {
+                ...action.payload.asset,
+            };
 
-            const assetTags = new Set();
-            action.payload.regions.forEach((region) => region.tags.forEach((tag) => assetTags.add(tag)));
+            const assetTags: Set<string> = new Set();
+            action.payload.regions.forEach((region) =>
+                region.tags.forEach((tag) => assetTags.add(tag))
+            );
 
             const newTags: ITag[] = state.tags ? [...state.tags] : [];
             let updateTags = false;
 
             assetTags.forEach((tag) => {
-                if (!state.tags || state.tags.length === 0 ||
-                    !state.tags.find((projectTag) => tag === projectTag.name)) {
+                if (
+                    !state.tags ||
+                    state.tags.length === 0 ||
+                    !state.tags.find((projectTag) => tag === projectTag.name)
+                ) {
                     newTags.push({
                         name: tag,
                         color: tagColors[newTags.length % tagColors.length],
@@ -76,12 +86,14 @@ export const reducer = (state: IProject = null, action: AnyAction): IProject => 
 
             return {
                 ...state,
-                sourceConnection: state.sourceConnection.id === action.payload.id
-                    ? { ...action.payload }
-                    : state.sourceConnection,
-                targetConnection: state.targetConnection.id === action.payload.id
-                    ? { ...action.payload }
-                    : state.targetConnection,
+                sourceConnection:
+                    state.sourceConnection.id === action.payload.id
+                        ? { ...action.payload }
+                        : state.sourceConnection,
+                targetConnection:
+                    state.targetConnection.id === action.payload.id
+                        ? { ...action.payload }
+                        : state.targetConnection,
             };
         default:
             return state;

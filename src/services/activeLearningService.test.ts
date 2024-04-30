@@ -1,11 +1,18 @@
 import { ActiveLearningService } from "./activeLearningService";
-import { IActiveLearningSettings, ModelPathType, IAssetMetadata, AssetState } from "../models/applicationState";
+import {
+    IActiveLearningSettings,
+    ModelPathType,
+    IAssetMetadata,
+    AssetState,
+} from "../models/applicationState";
 import MockFactory from "../common/mockFactory";
 import { appInfo } from "../common/appInfo";
 import { ObjectDetection } from "../providers/activeLearning/objectDetection";
 
 describe("Active Learning Service", () => {
-    const objectDetectionMock = ObjectDetection as jest.Mocked<typeof ObjectDetection>;
+    const objectDetectionMock = ObjectDetection as jest.Mocked<
+        typeof ObjectDetection
+    >;
     const defaultSettings: IActiveLearningSettings = {
         modelPathType: ModelPathType.Coco,
         autoDetect: true,
@@ -23,21 +30,30 @@ describe("Active Learning Service", () => {
     };
 
     beforeAll(() => {
-        window["require"] = jest.fn(() => electronMock);
+        window["require"] = jest.fn(
+            () => electronMock
+        ) as unknown as NodeRequire;
     });
 
     beforeEach(() => {
         activeLearningService = new ActiveLearningService(defaultSettings);
         objectDetectionMock.prototype.load = jest.fn(() => Promise.resolve());
-        objectDetectionMock.prototype.predictImage = jest.fn(() => Promise.resolve([]));
+        objectDetectionMock.prototype.predictImage = jest.fn(() =>
+            Promise.resolve([])
+        );
     });
 
     it("Predicts new regions to the asset metadata", async () => {
-        objectDetectionMock.prototype.predictImage = jest.fn(() => Promise.resolve(expectedRegions));
+        objectDetectionMock.prototype.predictImage = jest.fn(() =>
+            Promise.resolve(expectedRegions)
+        );
 
         const expectedRegions = MockFactory.createTestRegions(2);
         const canvas = MockFactory.mockCanvas()();
-        const asset = MockFactory.createTestAsset("TestAsset", AssetState.Visited);
+        const asset = MockFactory.createTestAsset(
+            "TestAsset",
+            AssetState.Visited
+        );
         const assetMetadata: IAssetMetadata = {
             asset: {
                 ...asset,
@@ -47,7 +63,10 @@ describe("Active Learning Service", () => {
             version: appInfo.version,
         };
 
-        const updatedAssetMetadata = await activeLearningService.predictRegions(canvas, assetMetadata);
+        const updatedAssetMetadata = await activeLearningService.predictRegions(
+            canvas,
+            assetMetadata
+        );
 
         expect(updatedAssetMetadata).toEqual({
             asset: {
@@ -60,36 +79,40 @@ describe("Active Learning Service", () => {
     });
 
     it("Predicts non matching regions to the asset metadata", async () => {
-        objectDetectionMock.prototype.predictImage = jest.fn(() => Promise.resolve(expectedRegions));
+        objectDetectionMock.prototype.predictImage = jest.fn(() =>
+            Promise.resolve(expectedRegions)
+        );
 
-        const uniqueRegion = MockFactory.createTestRegion("UniqueRegion", ["tag1", "tag2"]);
+        const uniqueRegion = MockFactory.createTestRegion("UniqueRegion", [
+            "tag1",
+            "tag2",
+        ]);
         const expectedRegions = MockFactory.createTestRegions(4);
         const canvas = MockFactory.mockCanvas()();
-        const asset = MockFactory.createTestAsset("TestAsset", AssetState.Visited);
+        const asset = MockFactory.createTestAsset(
+            "TestAsset",
+            AssetState.Visited
+        );
         const assetMetadata: IAssetMetadata = {
             asset: {
                 ...asset,
                 state: AssetState.Tagged,
             },
-            regions: [
-                uniqueRegion,
-                expectedRegions[0],
-                expectedRegions[1],
-            ],
+            regions: [uniqueRegion, expectedRegions[0], expectedRegions[1]],
             version: appInfo.version,
         };
 
-        const updatedAssetMetadata = await activeLearningService.predictRegions(canvas, assetMetadata);
+        const updatedAssetMetadata = await activeLearningService.predictRegions(
+            canvas,
+            assetMetadata
+        );
 
         expect(updatedAssetMetadata).toEqual({
             asset: {
                 ...assetMetadata.asset,
                 predicted: true,
             },
-            regions: [
-                uniqueRegion,
-                ...expectedRegions,
-            ],
+            regions: [uniqueRegion, ...expectedRegions],
             version: appInfo.version,
         });
     });

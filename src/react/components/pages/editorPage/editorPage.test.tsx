@@ -7,14 +7,24 @@ import { AnyAction, Store } from "redux";
 import EditorPage, { IEditorPageProps, IEditorPageState } from "./editorPage";
 import MockFactory from "../../../../common/mockFactory";
 import {
-    IApplicationState, IAssetMetadata, IProject,
-    EditorMode, IAsset, AssetState, ISize, IActiveLearningSettings, ModelPathType,
+    IApplicationState,
+    IAssetMetadata,
+    IProject,
+    EditorMode,
+    IAsset,
+    AssetState,
+    ISize,
+    IActiveLearningSettings,
+    ModelPathType,
 } from "../../../../models/applicationState";
 import { AssetProviderFactory } from "../../../../providers/storage/assetProviderFactory";
 import createReduxStore from "../../../../redux/store/store";
 import { AssetService } from "../../../../services/assetService";
 import registerToolbar, { ToolbarItemName } from "../../../../registerToolbar";
-import { KeyboardManager, KeyEventType } from "../../common/keyboardManager/keyboardManager";
+import {
+    KeyboardManager,
+    KeyEventType,
+} from "../../common/keyboardManager/keyboardManager";
 
 jest.mock("../../../../services/projectService");
 import ProjectService from "../../../../services/projectService";
@@ -35,7 +45,10 @@ import { EditorToolbar } from "./editorToolbar";
 import { ToolbarItem } from "../../toolbar/toolbarItem";
 import { ActiveLearningService } from "../../../../services/activeLearningService";
 
-function createComponent(store, props: IEditorPageProps): ReactWrapper<IEditorPageProps, IEditorPageState, EditorPage> {
+function createComponent(
+    store,
+    props: IEditorPageProps
+): ReactWrapper<IEditorPageProps, IEditorPageState, EditorPage> {
     return mount(
         <Provider store={store}>
             <KeyboardManager>
@@ -43,7 +56,7 @@ function createComponent(store, props: IEditorPageProps): ReactWrapper<IEditorPa
                     <EditorPage {...props} />
                 </Router>
             </KeyboardManager>
-        </Provider>,
+        </Provider>
     );
 }
 
@@ -51,12 +64,15 @@ function getState(wrapper): IEditorPageState {
     return wrapper.find(EditorPage).childAt(0).state() as IEditorPageState;
 }
 
-function dispatchKeyEvent(key: string, eventType: KeyEventType = KeyEventType.KeyDown) {
-    window.dispatchEvent(new KeyboardEvent(
-        eventType, {
+function dispatchKeyEvent(
+    key: string,
+    eventType: KeyEventType = KeyEventType.KeyDown
+) {
+    window.dispatchEvent(
+        new KeyboardEvent(eventType, {
             key,
-        },
-    ));
+        })
+    );
 }
 
 describe("Editor Page Component", () => {
@@ -75,14 +91,22 @@ describe("Editor Page Component", () => {
 
     beforeAll(() => {
         registerToolbar();
-        window["require"] = jest.fn(() => electronMock);
+        window["require"] = jest.fn(
+            () => electronMock
+        ) as unknown as NodeRequire;
 
         const editorMock = Editor as any;
-        editorMock.prototype.addContentSource = jest.fn(() => Promise.resolve());
-        editorMock.prototype.scaleRegionToSourceSize = jest.fn((regionData: any) => regionData);
+        editorMock.prototype.addContentSource = jest.fn(() =>
+            Promise.resolve()
+        );
+        editorMock.prototype.scaleRegionToSourceSize = jest.fn(
+            (regionData: any) => regionData
+        );
         editorMock.prototype.RM = {
             ...new RegionsManager(null, null),
-            getSelectedRegionsBounds: jest.fn(() => MockFactory.createTestRegions()),
+            getSelectedRegionsBounds: jest.fn(() =>
+                MockFactory.createTestRegions()
+            ),
         };
         editorMock.prototype.AS = {
             setSelectionMode: jest.fn(),
@@ -106,9 +130,15 @@ describe("Editor Page Component", () => {
             return Promise.resolve({ ...assetMetadata });
         });
 
-        projectServiceMock = ProjectService as jest.Mocked<typeof ProjectService>;
-        projectServiceMock.prototype.save = jest.fn((project) => Promise.resolve({ ...project }));
-        projectServiceMock.prototype.load = jest.fn((project) => Promise.resolve({ ...project }));
+        projectServiceMock = ProjectService as jest.Mocked<
+            typeof ProjectService
+        >;
+        projectServiceMock.prototype.save = jest.fn((project) =>
+            Promise.resolve({ ...project })
+        );
+        projectServiceMock.prototype.load = jest.fn((project) =>
+            Promise.resolve({ ...project })
+        );
 
         AssetProviderFactory.create = jest.fn(() => {
             return {
@@ -156,7 +186,10 @@ describe("Editor Page Component", () => {
         const props = MockFactory.editorPageProps(testProject.id);
 
         const wrapper = createComponent(store, props);
-        const editorPage = wrapper.find(EditorPage).childAt(0) as ReactWrapper<IEditorPageProps, IEditorPageState>;
+        const editorPage = wrapper.find(EditorPage).childAt(0) as ReactWrapper<
+            IEditorPageProps,
+            IEditorPageState
+        >;
 
         const partialProject = {
             id: testProject.id,
@@ -167,8 +200,12 @@ describe("Editor Page Component", () => {
 
         const expectedAsset = editorPage.state().assets[0];
 
-        expect(editorPage.props().project).toEqual(expect.objectContaining(partialProject));
-        expect(editorPage.state().assets.length).toEqual(projectAssets.length + testAssets.length);
+        expect(editorPage.props().project).toEqual(
+            expect.objectContaining(partialProject)
+        );
+        expect(editorPage.state().assets.length).toEqual(
+            projectAssets.length + testAssets.length
+        );
         expect(editorPage.state().selectedAsset).toMatchObject({
             asset: {
                 ...expectedAsset,
@@ -186,13 +223,22 @@ describe("Editor Page Component", () => {
         const store = createStore(testProject, true);
         const props = MockFactory.editorPageProps(testProject.id);
 
-        const loadAssetMetadataSpy = jest.spyOn(props.actions, "loadAssetMetadata");
-        const saveAssetMetadataSpy = jest.spyOn(props.actions, "saveAssetMetadata");
+        const loadAssetMetadataSpy = jest.spyOn(
+            props.actions,
+            "loadAssetMetadata"
+        );
+        const saveAssetMetadataSpy = jest.spyOn(
+            props.actions,
+            "saveAssetMetadata"
+        );
         const saveProjectSpy = jest.spyOn(props.actions, "saveProject");
 
         // create mock editor page
         const wrapper = createComponent(store, props);
-        const editorPage = wrapper.find(EditorPage).childAt(0) as ReactWrapper<IEditorPageProps, IEditorPageState>;
+        const editorPage = wrapper.find(EditorPage).childAt(0) as ReactWrapper<
+            IEditorPageProps,
+            IEditorPageState
+        >;
 
         await MockFactory.flushUi();
         wrapper.update();
@@ -203,7 +249,10 @@ describe("Editor Page Component", () => {
             name: testProject.name,
         };
 
-        expect(loadAssetMetadataSpy).toBeCalledWith(expect.objectContaining(partialProject), defaultAsset);
+        expect(loadAssetMetadataSpy).toBeCalledWith(
+            expect.objectContaining(partialProject),
+            defaultAsset
+        );
         expect(saveAssetMetadataSpy).toBeCalledWith(
             expect.objectContaining(partialProject),
             expect.objectContaining({
@@ -211,9 +260,11 @@ describe("Editor Page Component", () => {
                     ...expectedAsset,
                     state: AssetState.Visited,
                 },
-            }),
+            })
         );
-        expect(saveProjectSpy).toBeCalledWith(expect.objectContaining(partialProject));
+        expect(saveProjectSpy).toBeCalledWith(
+            expect.objectContaining(partialProject)
+        );
     });
 
     it("sets page state to invalid when edited asset includes un-tagged regions", async () => {
@@ -225,12 +276,18 @@ describe("Editor Page Component", () => {
         const store = createStore(testProject, true);
         const props = MockFactory.editorPageProps(testProject.id);
 
-        const saveAssetMetadataSpy = jest.spyOn(props.actions, "saveAssetMetadata");
+        const saveAssetMetadataSpy = jest.spyOn(
+            props.actions,
+            "saveAssetMetadata"
+        );
         const saveProjectSpy = jest.spyOn(props.actions, "saveProject");
 
         // create mock editor page
         const wrapper = createComponent(store, props);
-        const editorPage = wrapper.find(EditorPage).childAt(0) as ReactWrapper<IEditorPageProps, IEditorPageState>;
+        const editorPage = wrapper.find(EditorPage).childAt(0) as ReactWrapper<
+            IEditorPageProps,
+            IEditorPageState
+        >;
 
         await MockFactory.flushUi();
         wrapper.update();
@@ -273,12 +330,18 @@ describe("Editor Page Component", () => {
         const store = createStore(testProject, true);
         const props = MockFactory.editorPageProps(testProject.id);
 
-        const saveAssetMetadataSpy = jest.spyOn(props.actions, "saveAssetMetadata");
+        const saveAssetMetadataSpy = jest.spyOn(
+            props.actions,
+            "saveAssetMetadata"
+        );
         const saveProjectSpy = jest.spyOn(props.actions, "saveProject");
 
         // create mock editor page
         const wrapper = createComponent(store, props);
-        const editorPage = wrapper.find(EditorPage).childAt(0) as ReactWrapper<IEditorPageProps, IEditorPageState>;
+        const editorPage = wrapper.find(EditorPage).childAt(0) as ReactWrapper<
+            IEditorPageProps,
+            IEditorPageState
+        >;
 
         await MockFactory.flushUi();
         wrapper.update();
@@ -318,13 +381,22 @@ describe("Editor Page Component", () => {
         const store = createStore(testProject, true);
         const props = MockFactory.editorPageProps(testProject.id);
 
-        const loadAssetMetadataSpy = jest.spyOn(props.actions, "loadAssetMetadata");
-        const saveAssetMetadataSpy = jest.spyOn(props.actions, "saveAssetMetadata");
+        const loadAssetMetadataSpy = jest.spyOn(
+            props.actions,
+            "loadAssetMetadata"
+        );
+        const saveAssetMetadataSpy = jest.spyOn(
+            props.actions,
+            "saveAssetMetadata"
+        );
         const saveProjectSpy = jest.spyOn(props.actions, "saveProject");
 
         // create mock editor page
         const wrapper = createComponent(store, props);
-        const editorPage = wrapper.find(EditorPage).childAt(0) as ReactWrapper<IEditorPageProps, IEditorPageState>;
+        const editorPage = wrapper.find(EditorPage).childAt(0) as ReactWrapper<
+            IEditorPageProps,
+            IEditorPageState
+        >;
 
         await MockFactory.flushUi();
 
@@ -335,7 +407,10 @@ describe("Editor Page Component", () => {
             lastVisitedAssetId: testAssets[1].id,
         };
 
-        expect(loadAssetMetadataSpy).toBeCalledWith(expect.objectContaining(partialProject), defaultAsset);
+        expect(loadAssetMetadataSpy).toBeCalledWith(
+            expect.objectContaining(partialProject),
+            defaultAsset
+        );
         expect(saveAssetMetadataSpy).toBeCalledWith(
             expect.objectContaining(partialProject),
             expect.objectContaining({
@@ -343,9 +418,11 @@ describe("Editor Page Component", () => {
                     ...expectedAsset,
                     state: AssetState.Visited,
                 },
-            }),
+            })
         );
-        expect(saveProjectSpy).toBeCalledWith(expect.objectContaining(partialProject));
+        expect(saveProjectSpy).toBeCalledWith(
+            expect.objectContaining(partialProject)
+        );
     });
 
     it("When an image is updated the asset metadata is updated", async () => {
@@ -360,7 +437,9 @@ describe("Editor Page Component", () => {
 
         const editedImageAsset: IAssetMetadata = {
             asset: imageAsset,
-            regions: [MockFactory.createTestRegion("editedImageAsset", ["test"])],
+            regions: [
+                MockFactory.createTestRegion("editedImageAsset", ["test"]),
+            ],
             version: appInfo.version,
         };
 
@@ -370,7 +449,10 @@ describe("Editor Page Component", () => {
         wrapper.find(Canvas).props().onAssetMetadataChanged(editedImageAsset);
         await MockFactory.flushUi();
 
-        const editorPage = wrapper.find(EditorPage).childAt(0) as ReactWrapper<IEditorPageProps, IEditorPageState>;
+        const editorPage = wrapper.find(EditorPage).childAt(0) as ReactWrapper<
+            IEditorPageProps,
+            IEditorPageState
+        >;
 
         // Image asset is updated
         expect(assetServiceMock.prototype.save).toBeCalledWith({
@@ -382,7 +464,9 @@ describe("Editor Page Component", () => {
             version: appInfo.version,
         });
 
-        const matchingRootAsset = editorPage.state().assets.find((asset) => asset.id === imageAsset.id);
+        const matchingRootAsset = editorPage
+            .state()
+            .assets.find((asset) => asset.id === imageAsset.id);
         expect(matchingRootAsset.state).toEqual(AssetState.Tagged);
     });
 
@@ -408,9 +492,13 @@ describe("Editor Page Component", () => {
         });
 
         it("Child assets are not included within editor page state", () => {
-            const editorPage = wrapper.find(EditorPage).childAt(0) as ReactWrapper<IEditorPageProps, IEditorPageState>;
+            const editorPage = wrapper
+                .find(EditorPage)
+                .childAt(0) as ReactWrapper<IEditorPageProps, IEditorPageState>;
 
-            expect(editorPage.state().assets.length).toEqual(testAssets.length + 1);
+            expect(editorPage.state().assets.length).toEqual(
+                testAssets.length + 1
+            );
             expect(editorPage.state().selectedAsset.asset).toEqual({
                 ...videoAsset,
                 state: AssetState.Visited,
@@ -418,11 +506,14 @@ describe("Editor Page Component", () => {
         });
 
         it("When a VideoFrame is updated the root asset is also updated", async () => {
-            const getAssetMetadataMock = assetServiceMock.prototype.getAssetMetadata as jest.Mock;
-            getAssetMetadataMock.mockImplementationOnce(() => Promise.resolve({
-                asset: { ...videoAsset },
-                regions: [],
-            }));
+            const getAssetMetadataMock = assetServiceMock.prototype
+                .getAssetMetadata as jest.Mock;
+            getAssetMetadataMock.mockImplementationOnce(() =>
+                Promise.resolve({
+                    asset: { ...videoAsset },
+                    regions: [],
+                })
+            );
 
             const editedVideoFrame: IAssetMetadata = {
                 asset: videoFrames[0],
@@ -433,10 +524,15 @@ describe("Editor Page Component", () => {
             const saveMock = assetServiceMock.prototype.save as jest.Mock;
             saveMock.mockClear();
 
-            wrapper.find(Canvas).props().onAssetMetadataChanged(editedVideoFrame);
+            wrapper
+                .find(Canvas)
+                .props()
+                .onAssetMetadataChanged(editedVideoFrame);
             await MockFactory.flushUi();
 
-            const editorPage = wrapper.find(EditorPage).childAt(0) as ReactWrapper<IEditorPageProps, IEditorPageState>;
+            const editorPage = wrapper
+                .find(EditorPage)
+                .childAt(0) as ReactWrapper<IEditorPageProps, IEditorPageState>;
 
             const expectedRootVideoMetadata: IAssetMetadata = {
                 asset: {
@@ -451,12 +547,16 @@ describe("Editor Page Component", () => {
             expect(saveMock).toBeCalledTimes(2);
 
             // Root asset is updated
-            expect(saveMock.mock.calls[0][0]).toEqual(expectedRootVideoMetadata);
+            expect(saveMock.mock.calls[0][0]).toEqual(
+                expectedRootVideoMetadata
+            );
 
             // Child asset is updated
             expect(saveMock.mock.calls[1][0]).toEqual(editedVideoFrame);
 
-            const matchingRootAsset = editorPage.state().assets.find((asset) => asset.id === videoAsset.id);
+            const matchingRootAsset = editorPage
+                .state()
+                .assets.find((asset) => asset.id === videoAsset.id);
             expect(matchingRootAsset.state).toEqual(AssetState.Tagged);
         });
     });
@@ -477,7 +577,9 @@ describe("Editor Page Component", () => {
             if (!(clipboard && clipboard.writeText)) {
                 (navigator as any).clipboard = {
                     writeText: jest.fn(() => Promise.resolve()),
-                    readText: jest.fn(() => Promise.resolve(JSON.stringify([copiedRegion]))),
+                    readText: jest.fn(() =>
+                        Promise.resolve(JSON.stringify([copiedRegion]))
+                    ),
                 };
             }
         });
@@ -510,49 +612,69 @@ describe("Editor Page Component", () => {
         });
 
         it("selects the next asset when clicking the 'Next Asset' button in the toolbar", async () => {
-            await MockFactory.flushUi(() => wrapper
-                .find(`.${ToolbarItemName.NextAsset}`).simulate("click")); // Move to Asset 2
+            await MockFactory.flushUi(() =>
+                wrapper.find(`.${ToolbarItemName.NextAsset}`).simulate("click")
+            ); // Move to Asset 2
             wrapper.update();
 
             const expectedAsset = editorPage.state().assets[1];
-            expect(getState(wrapper).selectedAsset).toMatchObject({ asset: expectedAsset });
+            expect(getState(wrapper).selectedAsset).toMatchObject({
+                asset: expectedAsset,
+            });
         });
 
         it("selects the previous asset when clicking the 'Previous Asset' button in the toolbar", async () => {
-            await MockFactory.flushUi(() => wrapper
-                .find(`.${ToolbarItemName.NextAsset}`).simulate("click")); // Move to Asset 2
-            await MockFactory.flushUi(() => wrapper
-                .find(`.${ToolbarItemName.NextAsset}`).simulate("click")); // Move to Asset 3
-            await MockFactory.flushUi(() => wrapper
-                .find(`.${ToolbarItemName.PreviousAsset}`).simulate("click")); // Move to Asset 2
+            await MockFactory.flushUi(() =>
+                wrapper.find(`.${ToolbarItemName.NextAsset}`).simulate("click")
+            ); // Move to Asset 2
+            await MockFactory.flushUi(() =>
+                wrapper.find(`.${ToolbarItemName.NextAsset}`).simulate("click")
+            ); // Move to Asset 3
+            await MockFactory.flushUi(() =>
+                wrapper
+                    .find(`.${ToolbarItemName.PreviousAsset}`)
+                    .simulate("click")
+            ); // Move to Asset 2
 
             wrapper.update();
 
             const expectedAsset = editorPage.state().assets[1];
-            expect(getState(wrapper).selectedAsset).toMatchObject({ asset: expectedAsset });
+            expect(getState(wrapper).selectedAsset).toMatchObject({
+                asset: expectedAsset,
+            });
         });
 
         it("Calls copy regions with button click", async () => {
-            await MockFactory.flushUi(() => wrapper
-                .find(`.${ToolbarItemName.CopyRegions}`).simulate("click"));
+            await MockFactory.flushUi(() =>
+                wrapper
+                    .find(`.${ToolbarItemName.CopyRegions}`)
+                    .simulate("click")
+            );
             expect(copyRegions).toBeCalled();
         });
 
         it("Calls cut regions with button click", async () => {
-            await MockFactory.flushUi(() => wrapper
-                .find(`.${ToolbarItemName.CutRegions}`).simulate("click"));
+            await MockFactory.flushUi(() =>
+                wrapper.find(`.${ToolbarItemName.CutRegions}`).simulate("click")
+            );
             expect(cutRegions).toBeCalled();
         });
 
         it("Calls paste regions with button click", async () => {
-            await MockFactory.flushUi(() => wrapper
-                .find(`.${ToolbarItemName.PasteRegions}`).simulate("click"));
+            await MockFactory.flushUi(() =>
+                wrapper
+                    .find(`.${ToolbarItemName.PasteRegions}`)
+                    .simulate("click")
+            );
             expect(pasteRegions).toBeCalled();
         });
 
         it("Calls remove all regions confirmation with button click", async () => {
-            await MockFactory.flushUi(() => wrapper
-                .find(`.${ToolbarItemName.RemoveAllRegions}`).simulate("click"));
+            await MockFactory.flushUi(() =>
+                wrapper
+                    .find(`.${ToolbarItemName.RemoveAllRegions}`)
+                    .simulate("click")
+            );
             expect(removeAllRegionsConfirm).toBeCalled();
         });
 
@@ -583,14 +705,19 @@ describe("Editor Page Component", () => {
                 currentProject: project,
             });
 
-            const wrapper = createComponent(store, MockFactory.editorPageProps());
+            const wrapper = createComponent(
+                store,
+                MockFactory.editorPageProps()
+            );
             await waitForSelectedAsset(wrapper);
 
             expect(editorPage.state().selectedTag).toBeNull();
 
             dispatchKeyEvent("1");
 
-            expect(editorPage.state().selectedTag).toEqual(project.tags[0].name);
+            expect(editorPage.state().selectedTag).toEqual(
+                project.tags[0].name
+            );
         });
 
         it("sets selected tag and locked tags when CmdOrCtrl + hot key is pressed", async () => {
@@ -600,7 +727,10 @@ describe("Editor Page Component", () => {
                 currentProject: project,
             });
 
-            const wrapper = createComponent(store, MockFactory.editorPageProps());
+            const wrapper = createComponent(
+                store,
+                MockFactory.editorPageProps()
+            );
             await waitForSelectedAsset(wrapper);
 
             expect(editorPage.state().selectedTag).toBeNull();
@@ -620,7 +750,10 @@ describe("Editor Page Component", () => {
                 currentProject: project,
             });
 
-            const wrapper = createComponent(store, MockFactory.editorPageProps());
+            const wrapper = createComponent(
+                store,
+                MockFactory.editorPageProps()
+            );
             await waitForSelectedAsset(wrapper);
 
             expect(editorPage.state().selectedTag).toBeNull();
@@ -632,7 +765,6 @@ describe("Editor Page Component", () => {
     });
 
     describe("Basic tag interaction tests", () => {
-
         beforeAll(() => {
             registerMixins();
         });
@@ -644,7 +776,10 @@ describe("Editor Page Component", () => {
                 currentProject: project,
             });
 
-            const wrapper = createComponent(store, MockFactory.editorPageProps());
+            const wrapper = createComponent(
+                store,
+                MockFactory.editorPageProps()
+            );
             expect(wrapper.find(TagInput).props().tags).toEqual(project.tags);
         });
 
@@ -655,7 +790,10 @@ describe("Editor Page Component", () => {
                 currentProject: project,
             });
 
-            const wrapper = createComponent(store, MockFactory.editorPageProps());
+            const wrapper = createComponent(
+                store,
+                MockFactory.editorPageProps()
+            );
             await waitForSelectedAsset(wrapper);
 
             const newTag = MockFactory.createTestTag("NewTag");
@@ -665,11 +803,15 @@ describe("Editor Page Component", () => {
             await MockFactory.flushUi();
             wrapper.update();
 
-            const editorPage = wrapper.find(EditorPage).childAt(0) as ReactWrapper<IEditorPageProps>;
+            const editorPage = wrapper
+                .find(EditorPage)
+                .childAt(0) as ReactWrapper<IEditorPageProps>;
             const projectTags = editorPage.props().project.tags;
 
             expect(projectTags).toHaveLength(updatedTags.length);
-            expect(projectTags[projectTags.length - 1].name).toEqual(newTag.name);
+            expect(projectTags[projectTags.length - 1].name).toEqual(
+                newTag.name
+            );
         });
 
         it("Remove a tag", async () => {
@@ -679,7 +821,10 @@ describe("Editor Page Component", () => {
                 currentProject: project,
             });
 
-            const wrapper = createComponent(store, MockFactory.editorPageProps());
+            const wrapper = createComponent(
+                store,
+                MockFactory.editorPageProps()
+            );
             await waitForSelectedAsset(wrapper);
 
             const tagToDelete = project.tags[project.tags.length - 1];
@@ -692,7 +837,9 @@ describe("Editor Page Component", () => {
             await MockFactory.flushUi();
             wrapper.update();
 
-            const editorPage = wrapper.find(EditorPage).childAt(0) as ReactWrapper<IEditorPageProps>;
+            const editorPage = wrapper
+                .find(EditorPage)
+                .childAt(0) as ReactWrapper<IEditorPageProps>;
             const projectTags = editorPage.props().project.tags;
 
             expect(projectTags).toHaveLength(project.tags.length - 1);
@@ -705,15 +852,24 @@ describe("Editor Page Component", () => {
                 currentProject: project,
             });
 
-            const wrapper = createComponent(store, MockFactory.editorPageProps());
+            const wrapper = createComponent(
+                store,
+                MockFactory.editorPageProps()
+            );
             await waitForSelectedAsset(wrapper);
 
             wrapper.update();
-            wrapper.find("span.tag-name-text")
+            wrapper
+                .find("span.tag-name-text")
                 .first()
-                .simulate("click", { target: { innerText: project.tags[0].name }, ctrlKey: true });
+                .simulate("click", {
+                    target: { innerText: project.tags[0].name },
+                    ctrlKey: true,
+                });
             const newEditorPage = wrapper.find(EditorPage).childAt(0);
-            expect(newEditorPage.state().lockedTags).toEqual([project.tags[0].name]);
+            expect(newEditorPage.state().lockedTags).toEqual([
+                project.tags[0].name,
+            ]);
         });
 
         it("Removes tag from locked tags when ctrl clicked", async () => {
@@ -723,20 +879,33 @@ describe("Editor Page Component", () => {
                 currentProject: project,
             });
 
-            const wrapper = createComponent(store, MockFactory.editorPageProps());
+            const wrapper = createComponent(
+                store,
+                MockFactory.editorPageProps()
+            );
             await waitForSelectedAsset(wrapper);
 
             wrapper.update();
-            wrapper.find("span.tag-name-text")
+            wrapper
+                .find("span.tag-name-text")
                 .first()
-                .simulate("click", { target: { innerText: project.tags[0].name }, ctrlKey: true });
+                .simulate("click", {
+                    target: { innerText: project.tags[0].name },
+                    ctrlKey: true,
+                });
             let editorPage = wrapper.find(EditorPage).childAt(0);
-            expect(editorPage.state().lockedTags).toEqual([project.tags[0].name]);
+            expect(editorPage.state().lockedTags).toEqual([
+                project.tags[0].name,
+            ]);
 
             wrapper.update();
-            wrapper.find("span.tag-name-text")
+            wrapper
+                .find("span.tag-name-text")
                 .first()
-                .simulate("click", { target: { innerText: project.tags[0].name }, ctrlKey: true });
+                .simulate("click", {
+                    target: { innerText: project.tags[0].name },
+                    ctrlKey: true,
+                });
             editorPage = wrapper.find(EditorPage).childAt(0);
             expect(editorPage.state().lockedTags).toEqual([]);
         });
@@ -767,7 +936,9 @@ describe("Editor Page Component", () => {
 
         it("loads default thumbnail size from app settings", () => {
             const editorPage = wrapper.find(EditorPage).childAt(0);
-            expect(editorPage.state().thumbnailSize).toEqual(defaultThumbnailSize);
+            expect(editorPage.state().thumbnailSize).toEqual(
+                defaultThumbnailSize
+            );
         });
 
         it("resizes child components", () => {
@@ -785,36 +956,49 @@ describe("Editor Page Component", () => {
         });
 
         it("Saves thumbnail size to app settings", () => {
-            const editorPage = wrapper.find(EditorPage).childAt(0) as ReactWrapper<IEditorPageProps>;
-            const saveSettingsSpy = jest.spyOn(editorPage.props().applicationActions, "saveAppSettings");
+            const editorPage = wrapper
+                .find(EditorPage)
+                .childAt(0) as ReactWrapper<IEditorPageProps>;
+            const saveSettingsSpy = jest.spyOn(
+                editorPage.props().applicationActions,
+                "saveAppSettings"
+            );
             const newThumbnailWidth = 300;
 
             wrapper.find(SplitPane).props().onChange(newThumbnailWidth);
             wrapper.find(SplitPane).props().onDragFinished(newThumbnailWidth);
 
-            expect(saveSettingsSpy).toBeCalledWith(expect.objectContaining({
-                thumbnailSize: {
-                    width: newThumbnailWidth,
-                    height: newThumbnailWidth / (4 / 3),
-                },
-            }));
+            expect(saveSettingsSpy).toBeCalledWith(
+                expect.objectContaining({
+                    thumbnailSize: {
+                        width: newThumbnailWidth,
+                        height: newThumbnailWidth / (4 / 3),
+                    },
+                })
+            );
         });
     });
 
     describe("Active Learning", async () => {
         let wrapper: ReactWrapper;
         let editorPage: ReactWrapper<IEditorPageProps, IEditorPageState>;
-        const activeLearningMock = ActiveLearningService as jest.Mocked<typeof ActiveLearningService>;
+        const activeLearningMock = ActiveLearningService as jest.Mocked<
+            typeof ActiveLearningService
+        >;
 
-        async function beforeActiveLearningTest(activeLearningSettings?: IActiveLearningSettings) {
+        async function beforeActiveLearningTest(
+            activeLearningSettings?: IActiveLearningSettings
+        ) {
             document.querySelector = MockFactory.mockCanvas();
             activeLearningMock.prototype.isModelLoaded = jest.fn(() => true);
-            activeLearningMock.prototype.predictRegions = jest.fn((canvas, assetMetadtata) => {
-                return Promise.resolve({
-                    ...assetMetadtata,
-                    predicted: true,
-                });
-            });
+            activeLearningMock.prototype.predictRegions = jest.fn(
+                (canvas, assetMetadtata) => {
+                    return Promise.resolve({
+                        ...assetMetadtata,
+                        predicted: true,
+                    });
+                }
+            );
             const project = MockFactory.createTestProject();
 
             if (activeLearningSettings) {
@@ -841,7 +1025,10 @@ describe("Editor Page Component", () => {
 
             await beforeActiveLearningTest(activeLearningSettings);
 
-            editorPage.find(Canvas).props().onCanvasRendered(document.createElement("canvas"));
+            editorPage
+                .find(Canvas)
+                .props()
+                .onCanvasRendered(document.createElement("canvas"));
             expect(activeLearningMock.prototype.predictRegions).toBeCalled();
         });
 
@@ -855,11 +1042,17 @@ describe("Editor Page Component", () => {
             };
 
             const selectedAsset = editorPage.state().selectedAsset;
-            wrapper.find(EditorToolbar).props().onToolbarItemSelected(toolbarItem as ToolbarItem);
+            wrapper
+                .find(EditorToolbar)
+                .props()
+                .onToolbarItemSelected(toolbarItem as ToolbarItem);
 
             await MockFactory.flushUi();
 
-            expect(activeLearningMock.prototype.predictRegions).toBeCalledWith(expect.anything(), selectedAsset);
+            expect(activeLearningMock.prototype.predictRegions).toBeCalledWith(
+                expect.anything(),
+                selectedAsset
+            );
             expect(assetServiceMock.prototype.save).toBeCalledWith({
                 ...selectedAsset,
                 predicted: true,
@@ -868,7 +1061,10 @@ describe("Editor Page Component", () => {
     });
 });
 
-function createStore(project: IProject, setCurrentProject: boolean = false): Store<any, AnyAction> {
+function createStore(
+    project: IProject,
+    setCurrentProject: boolean = false
+): Store<any, AnyAction> {
     const initialState: IApplicationState = {
         currentProject: setCurrentProject ? project : null,
         appSettings: MockFactory.appSettings(),
@@ -881,9 +1077,7 @@ function createStore(project: IProject, setCurrentProject: boolean = false): Sto
 
 async function waitForSelectedAsset(wrapper: ReactWrapper) {
     await MockFactory.waitForCondition(() => {
-        const editorPage = wrapper
-            .find(EditorPage)
-            .childAt(0);
+        const editorPage = wrapper.find(EditorPage).childAt(0);
 
         return !!editorPage.state().selectedAsset;
     });

@@ -1,8 +1,15 @@
 import React from "react";
-import { IActiveLearningFormProps, ActiveLearningForm, IActiveLearningFormState } from "./activeLearningForm";
+import {
+    IActiveLearningFormProps,
+    ActiveLearningForm,
+    IActiveLearningFormState,
+} from "./activeLearningForm";
 import { ReactWrapper, mount } from "enzyme";
-import { ModelPathType, IActiveLearningSettings } from "../../../../models/applicationState";
-import Form from "react-jsonschema-form";
+import {
+    ModelPathType,
+    IActiveLearningSettings,
+} from "../../../../models/applicationState";
+import Form, { IChangeEvent } from "react-jsonschema-form";
 
 describe("Active Learning Form", () => {
     const onChangeHandler = jest.fn();
@@ -21,8 +28,9 @@ describe("Active Learning Form", () => {
         onCancel: onCancelHandler,
     };
 
-    function createComponent(props?: IActiveLearningFormProps)
-        : ReactWrapper<IActiveLearningFormProps, IActiveLearningFormState> {
+    function createComponent(
+        props?: IActiveLearningFormProps
+    ): ReactWrapper<IActiveLearningFormProps, IActiveLearningFormState> {
         props = props || defaultProps;
         return mount(<ActiveLearningForm {...props} />);
     }
@@ -72,16 +80,29 @@ describe("Active Learning Form", () => {
         };
 
         // Set type to URL
-        wrapper.find(Form).props().onChange({ formData: { modelPathType: ModelPathType.Url } });
+        wrapper
+            .find(Form)
+            .props()
+            .onChange({
+                formData: { modelPathType: ModelPathType.Url },
+            } as IChangeEvent<unknown>);
         // Set the remaining settings
-        wrapper.find(Form).props().onChange({ formData });
+        wrapper
+            .find(Form)
+            .props()
+            .onChange({ formData } as IChangeEvent<unknown>);
         expect(wrapper.state().formData).toEqual(formData);
         expect(onChangeHandler).toBeCalledWith(formData);
     });
 
     it("submits form data to the registered submit handler", () => {
         const wrapper = createComponent();
-        wrapper.find(Form).props().onSubmit({ formData: defaultProps.settings });
+        wrapper
+            .find(Form)
+            .props()
+            .onSubmit({
+                formData: defaultProps.settings,
+            } as IChangeEvent<unknown>);
 
         expect(onSubmitHandler).toBeCalledWith(defaultProps.settings);
     });
