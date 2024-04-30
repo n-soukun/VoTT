@@ -10,23 +10,28 @@ module.exports = {
         rules: [
             {
                 test: /\.ts?$/,
-                use: [{
-                    loader: "ts-loader",
-                    options: {
-                        compilerOptions: {
-                            noEmit: false
-                        }
-                    }
-                }],
-                exclude: /node_modules/
-            }
-        ]
+                use: [
+                    {
+                        loader: "ts-loader",
+                        options: {
+                            compilerOptions: {
+                                noEmit: false,
+                            },
+                        },
+                    },
+                ],
+                exclude: /node_modules/,
+            },
+        ],
     },
     resolve: {
-        extensions: [".ts", ".js"]
+        extensions: [".ts", ".js"],
+        fallback: {
+            os: require.resolve("os-browserify/browser"),
+        },
     },
     output: {
         filename: "main.js",
-        path: path.resolve(__dirname, "../build")
-    }
+        path: path.resolve(__dirname, "../build"),
+    },
 };
