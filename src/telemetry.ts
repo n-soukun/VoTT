@@ -1,8 +1,12 @@
 import { Env } from "./common/environment";
 import { reactAI } from "react-appinsights";
 import history from "./history";
-import { ApplicationInsights, IExceptionTelemetry, SeverityLevel } from "@microsoft/applicationinsights-web";
-import { version } from "../package.json";
+import {
+    ApplicationInsights,
+    IExceptionTelemetry,
+    SeverityLevel,
+} from "@microsoft/applicationinsights-web";
+import packageInfo from "../package.json";
 import { isElectron } from "./common/hostProcess";
 import { Action } from "redux";
 import { IAppError } from "./models/applicationState";
@@ -19,7 +23,7 @@ if (Env.get() !== "production") {
     // for development/testing
     // myho-appinsights
     debug = true;
-    maxBatchSize = 0;  // send telemetry as soon as it's collected
+    maxBatchSize = 0; // send telemetry as soon as it's collected
 }
 
 let appInsights;
@@ -34,7 +38,7 @@ export function setUpAppInsights() {
     }
 
     reactAI.setContext({
-        AppVersion: version,
+        AppVersion: packageInfo.version,
     });
 
     const config = {
@@ -44,12 +48,12 @@ export function setUpAppInsights() {
         extensionConfig: {
             [reactAI.extensionId]: {
                 debug,
-                history,  // required for tracking router changes
+                history, // required for tracking router changes
             },
         },
     };
 
-    appInsights = new ApplicationInsights({config});
+    appInsights = new ApplicationInsights({ config });
     appInsights.loadAppInsights();
 }
 

@@ -1,4 +1,5 @@
 const path = require("path");
+const webpack = require("webpack");
 
 module.exports = {
     node: {
@@ -26,12 +27,14 @@ module.exports = {
     },
     resolve: {
         extensions: [".ts", ".js"],
-        fallback: {
-            os: require.resolve("os-browserify/browser"),
-        },
     },
     output: {
         filename: "main.js",
         path: path.resolve(__dirname, "../build"),
     },
+    plugins: [
+        new webpack.ProvidePlugin({
+            process: "process/browser",
+        }),
+    ],
 };
